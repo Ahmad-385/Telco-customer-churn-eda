@@ -253,3 +253,121 @@ boxplot(cap_outliers(data$MonthlyCharges), main = "After Outlier Removal", col =
 
 
 
+# Load the required libraries
+install.packages("gridExtra")
+library(gridExtra)
+
+
+# Preview the dataset
+head(data)
+
+# Min-Max Scaling Function
+normalizeMinMax <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+# Min-Max Scaling for Numeric Columns
+data_minmax <- data
+numeric_cols <- sapply(data, is.numeric)
+data_minmax[, numeric_cols] <- apply(data[, numeric_cols], 2, normalizeMinMax)
+
+# Standardization Function
+normalizeStandardized <- function(x) {
+  return ((x - mean(x)) / sd(x))
+}
+
+# Standardization for Numeric Columns
+data_standardized <- data
+data_standardized[, numeric_cols] <- apply(data[, numeric_cols], 2, normalizeStandardized)
+
+# Robust Scaling (Robust Standardization)
+data_robust <- data
+data_robust[, numeric_cols] <- scale(data[, numeric_cols], center = TRUE, scale = TRUE)
+
+# Create histograms for the original and scaled data
+options(repr.plot.width = 12, repr.plot.height = 4)
+
+# Original Data
+p1 <- ggplot(data, aes(x = MonthlyCharges)) +
+  geom_histogram(binwidth = 5, fill = "purple", color = "black") +
+  labs(title = "Histogram of Monthly Charges (Original Data)")
+
+p2 <- ggplot(data_minmax, aes(x = MonthlyCharges)) +
+  geom_histogram(binwidth = 0.05, fill = "green", color = "black") +
+  labs(title = "Histogram of Monthly Charges (Min-Max Scaled)")
+
+# Standardized Data
+p3 <- ggplot(data_standardized, aes(x = MonthlyCharges)) +
+  geom_histogram(binwidth = 0.2, fill = "red", color = "black") +
+  labs(title = "Histogram of Monthly Charges (Standardized)")
+
+# Robust Scaled Data
+p4 <- ggplot(data_robust, aes(x = MonthlyCharges)) +
+  geom_histogram(binwidth = 0.2, fill = "blue", color = "black") +
+  labs(title = "Histogram of Monthly Charges (Robust Scaled)")
+
+# Combine Histograms
+grid.arrange(p1, p2, p3, p4, nrow = 2, ncol = 2)
+
+#for total charges
+
+# Check for missing values for totalcharges
+sum(is.na(data$TotalCharges))
+
+# Check for non-numeric values in total cahrges
+non_numeric_values <- data$TotalCharges[!is.numeric(as.numeric(data$TotalCharges))]
+print(non_numeric_values)
+# Replace non-numeric or missing values with NA
+data$TotalCharges <- as.numeric(data$TotalCharges)
+data$TotalCharges[is.na(data$TotalCharges)] <- mean(data$TotalCharges, na.rm = TRUE)
+
+
+# Min-Max Scaling Function
+normalizeMinMax <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+# Min-Max Scaling for TotalCharges
+data_minmax <- data
+data_minmax$TotalCharges <- normalizeMinMax(data$TotalCharges)
+
+# Standardization Function
+normalizeStandardized <- function(x) {
+  return ((x - mean(x)) / sd(x))
+}
+
+# Standardization for TotalCharges
+data_standardized <- data
+data_standardized$TotalCharges <- normalizeStandardized(data$TotalCharges)
+
+# Robust Scaling (Robust Standardization) for TotalCharges
+data_robust <- data
+data_robust$TotalCharges <- scale(data$TotalCharges, center = TRUE, scale = TRUE)
+
+# Create histograms for the original and scaled data
+options(repr.plot.width = 12, repr.plot.height = 4)
+
+# Original Data
+p1 <- ggplot(data, aes(x = TotalCharges)) +
+  geom_histogram(binwidth = 100, fill = "blue", color = "black") +
+  labs(title = "Histogram of Total Charges (Original Data)")
+
+# Min-Max Scaled Data
+p2 <- ggplot(data_minmax, aes(x = TotalCharges)) +
+  geom_histogram(binwidth = 0.05, fill = "green", color = "black") +
+  labs(title = "Histogram of Total Charges (Min-Max Scaled)")
+
+# Standardized Data
+p3 <- ggplot(data_standardized, aes(x = TotalCharges)) +
+  geom_histogram(binwidth = 0.2, fill = "red", color = "black") +
+  labs(title = "Histogram of Total Charges (Standardized)")
+
+# Robust Scaled Data
+p4 <- ggplot(data_robust, aes(x = TotalCharges)) +
+  geom_histogram(binwidth = 0.2, fill = "purple", color = "black") +
+  labs(title = "Histogram of Total Charges (Robust Scaled)")
+
+# Combine Histograms
+grid.arrange(p1, p2, p3, p4, nrow = 2, ncol = 2)
+
+
