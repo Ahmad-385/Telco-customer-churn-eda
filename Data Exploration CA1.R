@@ -371,3 +371,97 @@ p4 <- ggplot(data_robust, aes(x = TotalCharges)) +
 grid.arrange(p1, p2, p3, p4, nrow = 2, ncol = 2)
 
 
+
+
+
+#TASK 2 EDA &   Supporting Questions:
+
+# Q1: What is the size of the dataset (number of rows and columns)?
+
+print(dim(data))  # Rows and columns
+
+#Q2: What are the data types and ranges of the columns?
+
+print(str(data))  # Data types and structure
+
+#Q3: Are there any missing values in the dataset?
+
+# Check for missing values
+missing_values <- colSums(is.na(data))
+print(missing_values)
+
+# Visualize missing values
+library(ggplot2)
+na_column_df <- data.frame(Column = names(missing_values), Missing = missing_values)
+ggplot(na_column_df, aes(x = Column, y = Missing)) +
+  geom_bar(stat = "identity", fill = "brown") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Missing Values Per Column", x = "Columns", y = "Count of Missing Values")
+
+
+#Q4: What is the distribution of MonthlyCharges, TotalCharges, and tenure?
+
+# Distribution of numeric features
+ggplot(data, aes(x = MonthlyCharges)) +
+  geom_histogram(binwidth = 5, fill = "blue", color = "black") +
+  labs(title = "Distribution of MonthlyCharges", x = "MonthlyCharges", y = "Count")
+
+ggplot(data, aes(x = TotalCharges)) +
+  geom_histogram(binwidth = 100, fill = "green", color = "black") +
+  labs(title = "Distribution of TotalCharges", x = "TotalCharges", y = "Count")
+
+ggplot(data, aes(x = tenure)) +
+  geom_histogram(binwidth = 5, fill = "purple", color = "black") +
+  labs(title = "Distribution of Tenure", x = "Tenure", y = "Count")
+
+
+#Q5: Are there any outliers in these features?
+
+
+# Boxplots for outliers
+boxplot(data$MonthlyCharges, main = "Boxplot of MonthlyCharges", col = "brown")
+boxplot(data$TotalCharges, main = "Boxplot of TotalCharges", col = "pink")
+boxplot(data$tenure, main = "Boxplot of Tenure", col = "grey")
+
+#Q6: How does MonthlyCharges vary with Churn?
+
+# Covariation between Churn and MonthlyCharges
+
+ggplot(data, aes(x = Churn, y = MonthlyCharges, fill = Churn)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of MonthlyCharges by Churn", x = "Churn", y = "MonthlyCharges")
+
+#Q7: Are customers with higher TotalCharges more likely to churn?
+
+# Covariation between Churn and TotalCharges
+ggplot(data, aes(x = Churn, y = TotalCharges, fill = Churn)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of TotalCharges by Churn", x = "Churn", y = "TotalCharges")
+
+#Q8: Is there a relationship between tenure and Churn?
+
+# Covariation between Churn and tenure
+ggplot(data, aes(x = Churn, y = tenure, fill = Churn)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of Tenure by Churn", x = "Churn", y = "Tenure")
+
+#Q9: Are there customers with TotalCharges = 0 but with tenure > 0?
+
+# Unusual patterns: Customers with TotalCharges = 0 but tenure > 0
+unusual_patterns <- data[data$TotalCharges == 0 & data$tenure > 0, ]
+print("Unusual Patterns:")
+print(unusual_patterns)
+
+#Q10: Are there clusters or gaps in MonthlyCharges or tenure?
+
+# Scatterplot of tenure vs TotalCharges
+ggplot(data, aes(x = tenure, y = TotalCharges, color = Churn)) +
+  geom_point() +
+  labs(title = "Scatterplot of Tenure vs TotalCharges", x = "Tenure", y = "TotalCharges")
+
+mydata <- data
+head(mydata)  # Display the first few rows
+
+View(mydata)
+
+
