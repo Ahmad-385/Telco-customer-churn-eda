@@ -465,3 +465,43 @@ head(mydata)  # Display the first few rows
 View(mydata)
 
 
+
+#TASK-3 PCA
+
+
+install.packages("FactoMineR")
+install.packages("factoextra")
+install.packages("caret")
+library(scales)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(tidyr)
+library(FactoMineR)
+library(factoextra)
+library(caret)
+
+
+
+# Label Encoding for 'Contract' (as an example)
+data$Contract_Label <- as.numeric(as.factor(data$Contract))
+
+# Display the first few rows of Contract with assigned labels
+head_labels <- data.frame(
+  Contract = head(data$Contract),
+  Contract_Label = head(data$Contract_Label)
+)
+print(head_labels)
+
+# Plot the distribution of the label-encoded 'Contract' with horizontal bars
+ggplot(data, aes(x = as.factor(Contract_Label))) +
+  geom_bar(fill = "lightgreen", color = "black") +
+  labs(
+    title = "Distribution of Label Encoding on Contract",
+    x = "Contract (Label Encoded)",
+    y = "Count"
+  ) +
+  theme_minimal()
+
+# Verify the occurrence of each Contract type
+print(table(data$Contract))
