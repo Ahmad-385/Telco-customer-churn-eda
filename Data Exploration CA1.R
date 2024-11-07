@@ -505,3 +505,43 @@ ggplot(data, aes(x = as.factor(Contract_Label))) +
 
 # Verify the occurrence of each Contract type
 print(table(data$Contract))
+
+# Perform one-hot encoding for categorical variables (e.g., 'InternetService')
+# This creates separate columns for each category
+one_hot_encoded <- model.matrix(~ InternetService - 1, data = data)
+data <- cbind(data, one_hot_encoded)
+
+# Display the updated dataset
+View(data)
+
+
+# Select numeric columns for PCA
+pca_data <- data[, c("MonthlyCharges", "tenure", "TotalCharges")]
+
+# Ensure there are no missing values
+pca_data <- na.omit(pca_data)
+
+# Perform PCA using FactoMineR
+pca_result <- PCA(pca_data, ncp = 5, graph = FALSE)
+
+# Summarize the PCA results
+summary(pca_result)
+
+
+# Visualize the variance explained by principal components
+fviz_screeplot(pca_result, addlabels = TRUE, ylim = c(0, 100)) +
+  ggtitle("Scree Plot: Variance Explained by Principal Components")
+
+# Plot the variable contributions to the principal components
+fviz_pca_var(pca_result, col.var = "contrib") +
+  scale_color_gradient2(low = "blue", mid = "yellow", high = "red", midpoint = 50) +
+  theme_minimal() +
+  ggtitle("Variable Contributions to Principal Components")
+
+# Variable contributions
+var_contrib <- round(pca_result$var$contrib, 2)
+print(var_contrib)
+
+# Individual contributions
+ind_contrib <- round(pca_result$ind$contrib, 2)
+print(ind_contrib)
