@@ -545,3 +545,16 @@ print(var_contrib)
 # Individual contributions
 ind_contrib <- round(pca_result$ind$contrib, 2)
 print(ind_contrib)
+
+
+# Add PCA components back to the original dataset
+data$PCA1 <- NA  # Initialize with NA
+data$PCA2 <- NA  # Initialize with NA
+
+# Map PCA results to the original dataset
+complete_case_indices <- which(complete.cases(pca_data))
+data$PCA1[complete_case_indices] <- pca_result$ind$coord[, 1]
+data$PCA2[complete_case_indices] <- pca_result$ind$coord[, 2]
+
+# View the updated dataset
+View(data)
