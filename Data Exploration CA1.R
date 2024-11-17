@@ -72,39 +72,39 @@ for (col in names(data_mean)) {
 }
 
 # Replace missing numeric values with median
-data_median <- data
-for (col in names(data_median)) {
-  if (is.numeric(data_median[[col]])) {
-    data_median[[col]][is.na(data_median[[col]])] <- median(data_median[[col]], na.rm = TRUE)
-  }
-}
+#data_median <- data
+#for (col in names(data_median)) {
+ # if (is.numeric(data_median[[col]])) {
+  #  data_median[[col]][is.na(data_median[[col]])] <- median(data_median[[col]], na.rm = TRUE)
+  #}
+#}
 
 
 
 # Replace missing categorical values with mode
-replace_mode <- function(x) {
-  mode_val <- names(which.max(table(x, useNA = "no")))
-  x[is.na(x)] <- mode_val
-  return(x)
-}
+#replace_mode <- function(x) {
+ # mode_val <- names(which.max(table(x, useNA = "no")))
+  #x[is.na(x)] <- mode_val
+# return(x)
+#
 
-data_mode <- data
-for (col in names(data_mode)) {
-  if (is.character(data_mode[[col]])) {
-    data_mode[[col]] <- replace_mode(data_mode[[col]])
-  }
-}
+#ata_mode <- data
+#or (col in names(data_mode)) {
+ #if (is.character(data_mode[[col]])) {
+  # data_mode[[col]] <- replace_mode(data_mode[[col]])
+# }
+#
 
 #Plot comparison of missing values before and after handling
 missing_after_mean <- colSums(is.na(data_mean))
-missing_after_median <- colSums(is.na(data_median))
-missing_after_mode <- colSums(is.na(data_mode))
+ #ssing_after_median <- colSums(is.na(data_median))
+#issing_after_mode <- colSums(is.na(data_mode))
 
 # Create data frame for visualization
 missing_df <- data.frame(
-  Method = rep(c("Mean", "Median", "Mode"), each = ncol(data)),
-  Column = rep(names(data), 3),
-  Missing = c(missing_after_mean, missing_after_median, missing_after_mode)
+  Method = rep("Mean", ncol(data)), 
+  Column = names(data),             
+  Missing = missing_after_mean      
 )
 
 # Visualize missing values after imputation
@@ -224,7 +224,7 @@ cap_outliers <- function(x) {
   lower <- Q1 - 1.5 * IQR
   upper <- Q3 + 1.5 * IQR
   
-  # Count outliers
+  #Count outliers
   outliers <- sum(x < lower | x > upper, na.rm = TRUE)
   print(paste("Number of outliers detected:", outliers))
   
@@ -309,70 +309,9 @@ p4 <- ggplot(data_robust, aes(x = MonthlyCharges)) +
 # Combine Histograms
 grid.arrange(p1, p2, p3, p4, nrow = 2, ncol = 2)
 
-#for total charges
+head(data)
 
-# Check for missing values for totalcharges
-sum(is.na(data$TotalCharges))
-
-# Check for non-numeric values in total cahrges
-non_numeric_values <- data$TotalCharges[!is.numeric(as.numeric(data$TotalCharges))]
-print(non_numeric_values)
-# Replace non-numeric or missing values with NA
-data$TotalCharges <- as.numeric(data$TotalCharges)
-data$TotalCharges[is.na(data$TotalCharges)] <- mean(data$TotalCharges, na.rm = TRUE)
-
-
-# Min-Max Scaling Function
-normalizeMinMax <- function(x) {
-  return ((x - min(x)) / (max(x) - min(x)))
-}
-
-# Min-Max Scaling for TotalCharges
-data_minmax <- data
-data_minmax$TotalCharges <- normalizeMinMax(data$TotalCharges)
-
-# Standardization Function
-normalizeStandardized <- function(x) {
-  return ((x - mean(x)) / sd(x))
-}
-
-# Standardization for TotalCharges
-data_standardized <- data
-data_standardized$TotalCharges <- normalizeStandardized(data$TotalCharges)
-
-# Robust Scaling (Robust Standardization) for TotalCharges
-data_robust <- data
-data_robust$TotalCharges <- scale(data$TotalCharges, center = TRUE, scale = TRUE)
-
-# Create histograms for the original and scaled data
-options(repr.plot.width = 12, repr.plot.height = 4)
-
-# Original Data
-p1 <- ggplot(data, aes(x = TotalCharges)) +
-  geom_histogram(binwidth = 100, fill = "blue", color = "black") +
-  labs(title = "Histogram of Total Charges (Original Data)")
-
-# Min-Max Scaled Data
-p2 <- ggplot(data_minmax, aes(x = TotalCharges)) +
-  geom_histogram(binwidth = 0.05, fill = "green", color = "black") +
-  labs(title = "Histogram of Total Charges (Min-Max Scaled)")
-
-# Standardized Data
-p3 <- ggplot(data_standardized, aes(x = TotalCharges)) +
-  geom_histogram(binwidth = 0.2, fill = "red", color = "black") +
-  labs(title = "Histogram of Total Charges (Standardized)")
-
-# Robust Scaled Data
-p4 <- ggplot(data_robust, aes(x = TotalCharges)) +
-  geom_histogram(binwidth = 0.2, fill = "purple", color = "black") +
-  labs(title = "Histogram of Total Charges (Robust Scaled)")
-
-# Combine Histograms
-grid.arrange(p1, p2, p3, p4, nrow = 2, ncol = 2)
-
-
-
-
+dim(data)
 
 #TASK 2 EDA &   Supporting Questions:
 
@@ -402,17 +341,20 @@ ggplot(na_column_df, aes(x = Column, y = Missing)) +
 #Q4: What is the distribution of MonthlyCharges, TotalCharges, and tenure?
 
 # Distribution of numeric features
-ggplot(data, aes(x = MonthlyCharges)) +
+plot1 <- ggplot(data, aes(x = MonthlyCharges)) +
   geom_histogram(binwidth = 5, fill = "blue", color = "black") +
   labs(title = "Distribution of MonthlyCharges", x = "MonthlyCharges", y = "Count")
 
-ggplot(data, aes(x = TotalCharges)) +
+plot2 <- ggplot(data, aes(x = TotalCharges)) +
   geom_histogram(binwidth = 100, fill = "green", color = "black") +
   labs(title = "Distribution of TotalCharges", x = "TotalCharges", y = "Count")
 
-ggplot(data, aes(x = tenure)) +
+plot3 <- ggplot(data, aes(x = tenure)) +
   geom_histogram(binwidth = 5, fill = "purple", color = "black") +
   labs(title = "Distribution of Tenure", x = "Tenure", y = "Count")
+
+# Combine plots into a single plot
+grid.arrange(plot1, plot2, plot3, ncol = 3)
 
 
 #Q5: Are there any outliers in these features?
@@ -459,6 +401,28 @@ ggplot(data, aes(x = tenure, y = TotalCharges, color = Churn)) +
   geom_point() +
   labs(title = "Scatterplot of Tenure vs TotalCharges", x = "Tenure", y = "TotalCharges")
 
+#Q11: Are there any customers flagged with unusual patterns based on specific conditions?
+# Flag unusual patterns: Customers with TotalCharges = 0 but tenure > 0
+data$Flag_UnusualPattern <- ifelse(data$TotalCharges == 0 & data$tenure > 0, 1, 0)
+
+# Count flagged customers
+flagged_count <- sum(data$Flag_UnusualPattern)
+print(paste("Number of flagged customers:", flagged_count))
+
+# Display flagged customers
+flagged_customers <- data[data$Flag_UnusualPattern == 1, ]
+print(flagged_customers)
+library(ggplot2)
+ggplot(data, aes(x = tenure, y = TotalCharges, color = as.factor(Flag_UnusualPattern))) +
+  geom_point() +
+  labs(
+    title = "Flagged Customers Based on Unusual Patterns",
+    x = "Tenure",
+    y = "TotalCharges",
+    color = "Flag"
+  )
+
+
 mydata <- data
 head(mydata)  # Display the first few rows
 
@@ -483,7 +447,7 @@ library(caret)
 
 
 
-# Label Encoding for 'Contract' (as an example)
+# Label Encoding for 'Contract' 
 data$Contract_Label <- as.numeric(as.factor(data$Contract))
 
 # Display the first few rows of Contract with assigned labels
